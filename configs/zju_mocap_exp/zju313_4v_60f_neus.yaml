@@ -1,0 +1,468 @@
+task: 'neus'
+gpus: [0]
+
+train_dataset_module: 'lib.datasets.light_stage.multi_view_dataset'
+train_dataset_path: 'lib/datasets/light_stage/multi_view_dataset.py'
+test_dataset_module: 'lib.datasets.light_stage.multi_view_dataset'
+test_dataset_path: 'lib/datasets/light_stage/multi_view_dataset.py'
+
+network_module: 'lib.networks.neus_net'
+network_path: 'lib/networks/neus_net.py'
+renderer_module: 'lib.networks.renderer.neus_renderer'
+renderer_path: 'lib/networks/renderer/neus_renderer.py'
+
+trainer_module: 'lib.train.trainers.sdf'
+trainer_path: 'lib/train/trainers/sdf.py'
+
+evaluator_module: 'lib.evaluators.if_nerf'
+evaluator_path: 'lib/evaluators/if_nerf.py'
+
+visualizer_module: 'lib.visualizers.if_nerf'
+visualizer_path: 'lib/visualizers/if_nerf.py'
+
+mesh:
+    renderer_module: 'lib.networks.renderer.neus_mesh_renderer'
+    renderer_path: 'lib/networks/renderer/neus_mesh_renderer.py'
+    visualizer_module: 'lib.visualizers.mesh_visualizer'
+    visualizer_path: 'lib/visualizers/mesh_visualizer.py'
+
+human: 313
+
+train_dataset:
+    data_root: 'data/zju_mocap/CoreView_313'
+    human: 'CoreView_313'
+    ann_file: 'data/zju_mocap/CoreView_313/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/zju_mocap/CoreView_313'
+    human: 'CoreView_313'
+    ann_file: 'data/zju_mocap/CoreView_313/annots.npy'
+    split: 'test'
+
+train:
+    batch_size: 1
+    collator: ''
+    lr: 5e-4
+    lr_d: 1e-3
+    weight_decay: 0
+    epoch: 320
+    num_workers: 8
+    scheduler:
+        type: 'exponential'
+        gamma: 0.1
+        decay_epochs: 600
+finetune_cfg:
+    epoch: 400
+    img_src: 'images_ref'
+
+test:
+    sampler: 'FrameSampler'
+    batch_size: 1
+    collator: ''
+
+ep_iter: 500
+save_ep: 10
+
+# rendering options
+i_embed: 0
+xyz_res: 10
+view_res: 4
+raw_noise_std: 0
+
+N_samples: 64
+N_rand: 512
+
+perturb: 1
+white_bkgd: False
+
+num_render_views: 50
+
+# more rendering options
+use_normal: False
+
+
+# data options
+H: 1024
+W: 1024
+ratio: 0.5
+training_view: [0, 6, 12, 18]
+begin_ith_frame: 0
+num_train_frame: 60
+num_novel_pose_frame: 1000
+
+voxel_size: [0.005, 0.005, 0.005]  # dhw
+#voxel_size: [0.002, 0.002, 0.002]  # dhw
+
+# record options
+log_interval: 1
+eval_ep: 20
+mesh_ep: 40
+
+smpl: 'smpl'
+vertices: 'new_vertices'
+params: 'new_params'
+
+big_box: False
+new_params: True
+
+
+novel_view_cfg:
+    train_dataset_module: 'lib.datasets.light_stage.multi_view_demo_dataset'
+    train_dataset_path: 'lib/datasets/light_stage/multi_view_demo_dataset.py'
+    test_dataset_module: 'lib.datasets.light_stage.multi_view_demo_dataset'
+    test_dataset_path: 'lib/datasets/light_stage/multi_view_demo_dataset.py'
+
+    renderer_module: 'lib.networks.renderer.if_clight_renderer'
+    renderer_path: 'lib/networks/renderer/if_clight_renderer.py'
+
+    visualizer_module: 'lib.visualizers.if_nerf_demo'
+    visualizer_path: 'lib/visualizers/if_nerf_demo.py'
+
+    test:
+        sampler: ''
+render_body: True
+first_pose_cfg:
+    n_novel_views: 60
+    test_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-rotate'
+    test_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-rotate.py'
+    render_body: True
+    begin_ith_frame: 418 #277
+
+new_pose_cfg:
+    test_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-posed'
+    test_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-posed.py'
+    perturb: 0
+    begin_ith_frame: 300 #320
+    box_padding: 0.05
+
+
+unseen_pose_cfg:
+    perturb: 0
+    begin_ith_frame: 320 #320
+    box_padding: 0.05
+    img_src: 'images_ref'
+
+seen_pose_cfg:
+#    training_view: []
+    perturb: 0
+    img_src: 'images_ref'
+    #begin_ith_frame: 20
+
+
+# network options
+unet_skip_connection: True
+N_importance: 64
+up_sample_steps: 4     # 1 for simple coarse-to-fine sampling
+chunk: 4096
+proj_mode: 'sparse'
+always_fill: False
+use_proj_mask: True
+descripter_face_interp: True
+descripter_pixel_interp: False
+descripter_encoder_type: 'ae'
+descripter_decoder_flatten: True
+descripter_norm_type: 'in'
+descripter_latent_dim: 512
+backbone: 'neus'
+unet_extra_layer: False
+# training options
+sdf_input:
+  wpts: True
+  wproj: False
+  h: False
+  pose: False
+  loc: False
+  geo: False
+  geo_gt: False
+  vel: False
+  uv_coord: False
+  frame_idx: False
+  prev_feat: False
+  prev_deform: False
+  t: False
+  rgb_gt: False
+  spconv_feat: False
+  coarse_garment_normal: False
+  coarse_garment_velocity: False
+  body_normal: False
+  body_velocity: False
+
+
+
+
+var_input:
+  wpts: True
+  wproj: False
+  h: False
+  pose: False
+
+color_input:
+  wpts: True
+  wproj: False
+  h: False
+  wdir: True
+  ldir: False
+  latent_idx: True
+ 
+# loss options
+normal_constraint: True #True #todo: changeback
+normal_wt: 0.01
+gradient_wt: 0.01
+deform_wt: 0.
+
+ray_tracer:
+  object_bounding_sphere: 1.0
+  sdf_threshold: 5.0e-5
+  line_search_step: 0.5
+  line_step_iters: 3
+  sphere_tracing_iters: 10
+  n_steps: 100
+  n_secant_steps: 8
+eval_whole_img: True
+
+use_smpl: True
+vert_type: 'smpl'
+prev_frames: 0
+
+patch_sample: False
+sample_patch_size: 16
+mlp_type: 'mlp'
+perceptual_wt: 0.
+pose_wt: 0.
+n_layers: 8
+skip_in: [4]
+msk_loss_type: 'bce'
+
+use_msk_loss: True
+coord_type: 'xyz'
+
+naive_canonical: False
+
+feature_layer: ['feat_output_3']
+
+small_ae: False
+no_repeat_query: False
+zero_canonical: True #ues zero frame as canonical
+
+new_eik_loss: False
+
+uv_grad: False
+descripter_dim: 8
+
+rotate_camera: False
+
+color_mode: 'idr'
+importance_only: False
+
+pretrained_model: ''
+single_unet: False
+
+kld_wt: 0.01
+
+train_body_sdf: False
+
+h_wt: 0.
+
+down_sampling_layers: 4
+
+load_prev_frame: False
+
+auto_regression: False
+sdf_wrap_wt: 0.
+
+msk_wt: 1.
+img_wt: 1.
+
+train_deform_net: True
+
+use_udf: False
+
+erode_edge: False
+
+xyz_wt: 0.
+
+cloth_only: False
+
+body_replace: False
+
+surface_rendering: False
+
+distort: True
+
+use_seg_msk: True
+
+# data
+body_sample_ratio: 0.2
+cloth_sample_ratio: 0.3
+texture_loss_wt: 0.
+texture_reg_wt: 0.
+divergence_wt: 0.
+gt_constraint: False
+depth_wt: 1.
+
+proj_on_tpose: False
+
+neural_rendering: False
+
+g_pretrain_epoch: 0
+gan_n_critics: 1
+
+gan_gp_wt: 1.
+d_steps: 1
+g_steps: 1
+
+grid_sample: False
+enable_gan: True
+
+learnable_feat_dim: 0
+
+img_loss_type: huber
+nr_upsample_steps: 2
+
+neural_renderer_type: 'ori'
+test_cam_pose: 0
+
+surface_rendering_v2: False
+surface_rendering_v3: False
+
+loss_type: 'v1'
+
+gt_vertices: True
+
+sample_bound: False
+
+strict_load: True
+
+cloth_reg: False
+
+canonical_frame: -1
+
+vel_reg_wt: 0.
+feat_reg_wt: 0.
+
+g: 10.
+rho: 1.2
+c: 0.5
+area: 1
+k: 5.
+e: 0.5
+
+simulate: False
+
+vgg_type: 'l2'
+simulate_v2: False
+
+neighbour_reg_wt: 0.
+simulate_v3: False
+
+clip_gradient: True
+
+use_vel: True
+use_norm: True
+use_descriptor: True
+
+pose_nr: False
+
+only_render_body: False
+
+super_nr: False
+
+nr_only: False
+
+bg_seg: 0
+body_seg: 1
+cloth_seg: 6
+
+rendering_2d: False
+
+unet_dim: 512
+
+coarse_garment: True
+
+spconv: False
+
+uv_encode: False
+
+use_signed_h: True
+sp_feat_type: 'coarse_garment'
+sp_feat_dim: 2287 #16412 #14125+2287
+encode_body_descriptor: False
+encode_coarse_garment_descriptor: False
+encode_2d_feat: False
+body_only: False
+coarse_only: False
+
+body_template: 'body_template_gt'
+garment_template: 'garment_template_gt'
+
+nerf_msk_wt: 1.
+nr_msk_wt: 1.
+
+position_embedding_proj: True
+position_embedding: True
+img_src: 'images'
+
+n_reference_view: 2
+
+is_ref_finetune: False
+
+ref_interp: False
+interp_v2: False
+
+#rgb_nr: False
+nr_in_dim: 128
+
+use_bias: True
+
+num_basis: 0
+
+omega_sparsity_wt: 0.
+offsets_norm_wt: 0.
+basis_color_wt: 0.
+direct_rgb_wt: 1.
+
+palette_input:
+  radiance: False
+  offset: False
+  omega: False
+  diffuse_latent: False
+  vd_latent: False
+  sr_body: False
+
+palette_version: ''
+
+optimize_palette: True
+use_mask: True
+
+cloth_color: []
+val_cloth_color: []
+body_color: []
+
+palette_color: []
+val_palette_color: []
+
+finetune_epoch: 320
+
+balance_wt: 0.
+v100_wt: 0.
+
+smooth_wt: 0.
+
+hard_rgb_decay_ep: -1
+
+basis_wt: 0.
+
+radiance_dim: 1
+
+sim_wt: 0.
+#Connective Dominance Loss
+cd_wt: 0.
+cd_area: []
+
+palette_wt: 0.
+gray_scale: False
+
+novel_pose_rotation: [0,0,0]
+param_path: params_smpl_new #params_smpl
+body_suffix: ''

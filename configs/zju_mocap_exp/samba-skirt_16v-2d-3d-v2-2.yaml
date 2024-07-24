@@ -1,0 +1,232 @@
+task: 'neus_sa_norm_vel'
+gpus: [0]
+
+parent_cfg: 'configs/zju_mocap_exp/zju313_4v_60f_neus.yaml'
+
+train_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-bbox-smpl'
+train_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-bbox-smpl.py'
+test_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-bbox-smpl'
+test_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-bbox-smpl.py'
+
+network_module: 'lib.networks.nerf_sa_norm_vel_vae_net-single-nr-smpl-palette'
+network_path: 'lib/networks/nerf_sa_norm_vel_vae_net-single-nr-smpl-palette.py'
+renderer_module: 'lib.networks.renderer.nerf_sa_renderer-palette'
+renderer_path: 'lib/networks/renderer/nerf_sa_renderer-palette.py'
+
+trainer_module: 'lib.train.trainers.nerf'
+trainer_path: 'lib/train/trainers/nerf.py'
+
+
+
+# data
+frame_interval: 1
+prev_frames: 2
+
+train:
+    epoch: 320
+    shuffle: True
+
+# record options
+eval_ep: 10000#20
+mesh_ep: 10000#40
+
+# data options
+#2~851
+begin_ith_frame: 120
+num_train_frame: 600 #700 #60
+#training_view: [1,2,3,4, 6,7,8,9, 11,12,13, 14,16,17,18,19]
+training_view: []
+
+train_dataset:
+    data_root: 'data/synthetic_human/samba_skirt_offset_view20_v3'
+    human: 'g1'
+    ann_file: 'data/synthetic_human/samba_skirt_offset_view20_v3/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/synthetic_human/samba_skirt_offset_view20_v3'
+    human: 'g1'
+    ann_file: 'data/synthetic_human/samba_skirt_offset_view20_v3/annots.npy'
+    split: 'test'
+mesh:
+    renderer_module: 'lib.networks.renderer.nerf_mesh_renderer'
+    renderer_path: 'lib/networks/renderer/nerf_mesh_renderer.py'
+    visualizer_module: 'lib.visualizers.nerf_mesh_visualizer'
+    visualizer_path: 'lib/visualizers/nerf_mesh_visualizer.py'
+
+#unseen_pose_cfg:
+#    perturb: 0
+#    begin_ith_frame: 2000 #320
+#    box_padding: 0.05
+first_pose_cfg:
+    n_novel_views: 60
+    test_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-rotate-smpl'
+    test_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-rotate-smpl.py'
+    render_body: True
+    begin_ith_frame: 418 #277
+
+unseen_first_pose_cfg:
+    n_novel_views: 60
+    test_dataset_module: 'lib.datasets.light_stage.multi_view_vel_dataset-rotate-smpl'
+    test_dataset_path: 'lib/datasets/light_stage/multi_view_vel_dataset-rotate-smpl.py'
+    render_body: True
+    begin_ith_frame: 418 #277
+    img_src: 'images_ref'
+    test_dataset:
+        data_root: 'data/synthetic_human/samba_test_skirt_offset_view20_v3'
+        human: 'g1'
+        ann_file: 'data/synthetic_human/samba_test_skirt_offset_view20_v3/annots.npy'
+        split: 'test'
+
+unseen_pose_cfg:
+    perturb: 0
+
+    num_train_frame: 500
+    training_view: []
+    box_padding: 0.05
+    img_src: 'images_ref'
+    begin_ith_frame: 409 # 335
+    test_dataset:
+        data_root: 'data/synthetic_human/samba_test_skirt_offset_view20_v3'
+        human: 'g1'
+        ann_file: 'data/synthetic_human/samba_test_skirt_offset_view20_v3/annots.npy'
+        split: 'test'
+
+#    begin_ith_frame: 20
+#    img_src: 'images_ref_skirt'
+#    test_dataset:
+#        data_root: 'data/synthetic_human/test-hh'
+#        human: 'g1'
+#        ann_file: 'data/synthetic_human/test-hh/annots.npy'
+#        split: 'test'
+
+#    begin_ith_frame: 3
+#    img_src: 'images_ref'
+#    test_dataset:
+#        data_root: 'data/synthetic_human/bad_case'
+#        human: 'g1'
+#        ann_file: 'data/synthetic_human/bad_case/annots.npy'
+#        split: 'test'
+
+human: 1
+
+use_smpl: False
+vert_type: 'gt'#'gt'
+
+# network options
+proj_mode: 'nearest'
+#proj_mode: 'sparse'
+use_proj_mask: False
+optimize_smpl: False
+backbone: 'nerf'
+
+#descripter_encoder_type: 'unet'
+unet_skip_connection: True
+descripter_face_interp: False
+descripter_pixel_interp: True
+uv_size: 128
+
+descripter_encoder_type: 'ae'
+# training options
+sdf_input:
+  geo: True
+  vel: True
+  wproj: True # 留待测试
+  h: True
+  rgb_gt: True
+  spconv_feat: False
+  coarse_garment_normal: False
+  coarse_garment_velocity: False
+  body_normal: True
+  body_velocity: True
+  wpts: False
+
+color_input:
+  latent_idx: False
+normal_constraint: True
+
+single_unet: True
+
+msk_loss_type: 'bce'
+msk_wt: 1.
+
+erode_edge: False
+use_seg_msk: True
+
+surface_rendering: False
+
+body_sample_ratio: 0.
+cloth_sample_ratio: 0.5
+#texture_loss_wt: 1.
+#texture_reg_wt: 1.
+
+down_sampling_layers: 4
+
+neural_rendering: True
+
+N_samples: 64 #64
+N_importance: 0 #32 #64
+#importance_only: True
+N_rand: 16384 #4096 #32*32 #512 #16384 #
+#patch_sample: True
+#sample_patch_size: 32 #32 #16 23
+ratio: 0.5
+
+
+
+chunk: 16384 #4096 #16384
+
+surface_rendering_v2: False
+
+perceptual_wt: 0.1
+
+nr_upsample_steps: 2
+
+sample_bound: True
+
+reference_view: [0, 10]
+
+uv_encode: True
+
+
+encode_body_descriptor: True
+encode_coarse_garment_descriptor: True
+encode_2d_feat: True
+position_embedding_proj: False
+position_embedding: False
+body_only: True
+
+vgg_type: 'dng'
+
+body_template: 'body_template_gt'
+garment_template: 'coarse_garment_long-coarse'
+ref_interp: True
+interp_v2: True
+
+
+num_basis: 2
+
+omega_sparsity_wt: 0.0002
+offsets_norm_wt: 0.03
+basis_color_wt: 0.001
+direct_rgb_wt: 1.
+img_wt: 1.
+
+#pretrained_model: 'data/trained_model/neus_sa_norm_vel/samba-skirt_16v-2d-3d-nocolor/400.pth'
+optimize_palette: False
+
+#palette_color: [[0.7725,0.69,0.455],
+#                [0.5786377191543579, 0.5779940485954285, 0.5776335000991821]]
+
+palette_color: [[0.941176471, 0.576470588, 0.168627451],
+                [0.784,0.784,0.784]]
+val_palette_idx: 0
+#val_palette_color: [[0.5464375615119934, 0.6755353212356567, 0.48225927352905273],
+#                    [0.5786377191543579, 0.5779940485954285, 0.5776335000991821]]
+val_palette_color: [[0.415686275, 0.690196078, 0.298039216],
+                [0.784,0.784,0.784]]
+descripter_dim: 8
+
+img_src: 'images_ref'
+
+#novel_pose_rotation: [0., -25., 0.]

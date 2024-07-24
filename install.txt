@@ -1,0 +1,13 @@
+conda create --name ganerf python=3.9
+conda activate ganerf
+
+pip install torch==1.13.0+cu116 torchvision==0.14.0+cu116 torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu116
+pip install git+https://github.com/facebookresearch/pytorch3d.git@v0.7.2
+pip install matplotlib
+pip install psutil
+pip install opencv-python
+pip install open3d
+pip install scikit-image==0.19.3
+pip install kornia
+pip install spconv-cu116
+pip install chumpy
