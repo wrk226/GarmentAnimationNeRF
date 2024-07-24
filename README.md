@@ -27,12 +27,12 @@ pip install spconv-cu116
 pip install chumpy
 ```
 
-## train
+## Train
 Run the following command from the `$ROOTPATH` directory:
 ```
 python train_net.py --cfg_file configs/zju_mocap_exp/samba-multilayer_16v-2d-3d-v2-2.yaml --train_epochs 400 exp_name samba-multilayer_16v-2d-3d-v2-2 resume True
 ```
-## test
+## Test
 Run the following command from the `$ROOTPATH` directory:
 ```
 python run.py --type seen_pose --cfg_file configs/zju_mocap_exp/samba-multilayer_16v-2d-3d-v2-2.yaml --test_epoch 400 exp_name samba-multilayer_16v-2d-3d-v2-2
