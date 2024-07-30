@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository contains the implemetation of [Garment Animation NeRF with Color Editing](https://github.com/wrk226/GarmentAnimationNeRF) proposed in SCA 2024.
+This repository contains the implemetation of [Garment Animation NeRF with Color Editing](https://arxiv.org/abs/2407.19774) proposed in SCA 2024.
 
 ![微信截图_20240724183317](https://github.com/user-attachments/assets/b62d9ee5-a8f0-408f-b803-f5a2e659492a)
 
