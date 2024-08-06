@@ -1,5 +1,8 @@
 # GarmentAnimationNeRF
 
+<a href="https://wrk226.github.io/GarmentAnimationNeRF.html">Project Page</a> | <a href="https://arxiv.org/pdf/2407.19774">arXiv</a> | <a href="https://youtu.be/_v9xQXXRCKo?si=AfCICF56KD5HJUSX">Video</a>
+
+
 ## Introduction
 
 This repository contains the implemetation of [Garment Animation NeRF with Color Editing](https://arxiv.org/abs/2407.19774) proposed in SCA 2024 (oral).
